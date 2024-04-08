@@ -1,4 +1,4 @@
 .vscode
-ROS/build/*
-ROS/install/*
-ROS/log/*
+ROS/build/
+ROS/install/
+ROS/log/

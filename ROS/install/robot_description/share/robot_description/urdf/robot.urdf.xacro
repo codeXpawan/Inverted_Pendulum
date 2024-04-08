@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="firefighter">
+<xacro:property name="horizontal_ply_length" value="0.3"/>
+<xacro:property name="horizontal_ply_mass" value="0.1"/>
+<xacro:property name="vertical_ply_mass" value="0.15"/>
+<xacro:property name="ply_breadth" value="0.1" />
+<xacro:property name="ply_thickness" value="0.02" />
+<xacro:property name="vertical_ply_length" value="0.5" />
+<xacro:property name="wheel_radius" value="0.04"/>
+<xacro:property name="wheel_thickness" value="0.03"/>
+<xacro:property name="wheel_mass" value="0.1"/>
+<xacro:macro name="box_inertia" params="m l w h">
+        <inertial>
+            <mass value="${m}" />
+            <inertia ixx="${(m/12.0)*(w*w+h*h)}" ixy="0" ixz="0" iyy="${(m/12.0)*(l*l+h*h)}" iyz="0"
+                izz="${(m/12.0)*(l*l+w*w)}" />
+        </inertial>
+</xacro:macro>
+<xacro:macro name="cylindrical_inertia" params="m r h">
+        <inertial>
+            <mass value="${m}" />
+            <inertia ixx="${(m/12.0)*(3*r*r+h*h)}" ixy="0" ixz="0" iyy="${(m/12.0)*(3*r*r+h*h)}"
+                iyz="0" izz="${(m/2.0)*(r*r)}" />
+        </inertial>
+</xacro:macro>
+
+    <link name="dummy_link">
+    </link>
+
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <box size="${horizontal_ply_length} ${ply_breadth} ${ply_thickness}"/>
+            </geometry>
+            <origin xyz="0.0 0.0 ${ply_thickness/2+wheel_radius}" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${horizontal_ply_length} ${ply_breadth} ${ply_thickness}"/>
+            </geometry>
+            <origin xyz="0.0 0.0 ${ply_thickness/2}" />
+        </collision>
+        <xacro:box_inertia m="${horizontal_ply_mass}" l="${horizontal_ply_length}" w="${ply_breadth}" h="${ply_thickness}"/>
+    </link>
+    <joint name="dummy_joint" type="fixed">
+        <parent link="dummy_link"/>
+        <child link="base_link"/>
+    </joint>
+    <link name="left_link">
+        <visual>
+            <geometry>
+                <box size="${vertical_ply_length} ${ply_breadth} ${ply_thickness}"/>
+            </geometry>
+            <origin xyz="0.0 0.0 ${vertical_ply_length/2}" rpy="0.0 1.57075 0.0"/>    
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${vertical_ply_length} ${ply_breadth} ${ply_thickness}"/>
+            </geometry>
+            <origin xyz="0.0 0.0 ${vertical_ply_length/2}" rpy="0.0 1.57075 0.0"/> 
+        </collision>
+        <xacro:box_inertia m="${vertical_ply_mass}" l="${vertical_ply_length}" w="${ply_breadth}" h="${ply_thickness}"/>
+    </link>
+    <joint name="base_to_left_link" type="fixed">
+        <parent link="base_link"/>
+        <child link="left_link"/>
+        <origin xyz="${horizontal_ply_length/2} 0.0 0.04"/>
+    </joint>
+    <link name="right_link">
+        <visual>
+            <geometry>
+                <box size="${vertical_ply_length} ${ply_breadth} ${ply_thickness}"/>
+            </geometry>
+            <origin xyz="0.0 0.0 ${vertical_ply_length/2}" rpy="0.0 1.57075 0.0"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${vertical_ply_length} ${ply_breadth} ${ply_thickness}"/>
+            </geometry>
+            <origin xyz="0.0 0.0 ${vertical_ply_length/2}" rpy="0.0 1.57075 0.0"/>
+        </collision>
+    </link>
+    <joint name="base_to_right_link" type="fixed">
+        <parent link="base_link"/>
+        <child link="right_link"/>
+        <origin xyz="${-horizontal_ply_length/2} 0.0 0.04" />
+    </joint>
+    <link name="top_link">
+        <visual>
+            <geometry>
+                <box size="${horizontal_ply_length} ${ply_breadth} ${ply_thickness}"/>
+            </geometry>
+            <origin xyz="0.0 0.0 ${-ply_thickness/2}" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${horizontal_ply_length} ${ply_breadth} ${ply_thickness}"/>
+            </geometry>
+            <origin xyz="0.0 0.0 ${-ply_thickness/2}" />
+        </collision>
+        <xacro:box_inertia m="${horizontal_ply_mass}" l="${horizontal_ply_length}" w="${ply_breadth}" h="${ply_thickness}"/>
+    </link>
+    <joint name="left_to_top_link" type="fixed">
+        <parent link="left_link"/>
+        <child link="top_link"/>
+        <origin xyz="${-horizontal_ply_length/2} 0.0 ${vertical_ply_length}" />
+        
+    </joint>
+    <!-- <joint name="right_to_top_link" type="fixed">
+        <parent link="right_link"/>
+        <child link="top_link"/>
+        <origin xyz="0.3 0.0 0.48" />
+    </joint> -->
+    <link name="middle_link">
+        <visual>
+            <geometry>
+                <box size="${horizontal_ply_length} ${ply_breadth} ${ply_thickness}"/>
+            </geometry>
+            <origin xyz="${-horizontal_ply_length/2} 0.0 0.01" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${horizontal_ply_length} ${ply_breadth} ${ply_thickness}"/>
+            </geometry>
+            <origin xyz="${-horizontal_ply_length/2} 0.0 0.01" />
+        </collision>
+        <xacro:box_inertia m="${horizontal_ply_mass}" l="${horizontal_ply_length}" w="${ply_breadth}" h="${ply_thickness}"/>
+    </link>
+    <joint name="left_to_middle_link" type="fixed">
+        <parent link="left_link"/>
+        <child link="middle_link"/>
+        <origin xyz="0.0 0.0 0.23" />
+        
+    </joint>
+    <!-- <joint name="right_to_middle_link" type="fixed">
+        <parent link="right_link"/>
+        <child link="middle_link"/>
+        <origin xyz="0.3 0.0 0.23" />
+    </joint> -->
+    <link name="left_wheel">
+        <visual>
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+            </geometry>
+            <origin rpy="0.0 1.57075 0.0"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+            </geometry>
+            <origin rpy="0.0 1.57075 0.0"/>
+        </collision>
+        <xacro:cylindrical_inertia m="${wheel_mass}" r="${wheel_radius}" h="${wheel_thickness}" />
+    </link>
+    <joint name="base_to_left_wheel" type="continuous">
+        <axis xyz="1 0.0 0.0"/>
+        <parent link="base_link"/>
+        <child link="left_wheel"/>
+        <origin xyz="0.18 0.0 0.04" />
+    </joint>
+    <link name="right_wheel">
+        <visual>
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+            </geometry>
+            <origin rpy="0.0 1.57075 0.0"/>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+            </geometry>
+            <origin rpy="0.0 1.57075 0.0"/>
+        </collision>
+        <xacro:cylindrical_inertia m="${wheel_mass}" r="${wheel_radius}" h="${wheel_thickness}" />
+    </link>
+    <joint name="base_to_right_wheel" type="continuous">
+        <parent link="base_link"/>
+        <child link="right_wheel"/>
+        <origin xyz="-0.18 0.0 0.04" />
+    </joint>
+    <link name="imu_link">
+    </link>
+    <joint name="top_to_imu_link" type="fixed">
+        <parent link="top_link"/>
+        <child link="imu_link"/>
+        <origin xyz="0.01 0.0 0.0" />
+        
+    </joint>
+
+</robot> 

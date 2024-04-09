@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="firefighter">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="Inverted_Pendulum">
 <xacro:property name="horizontal_ply_length" value="0.3"/>
 <xacro:property name="horizontal_ply_mass" value="0.1"/>
 <xacro:property name="vertical_ply_mass" value="0.15"/>
@@ -23,6 +23,9 @@
                 iyz="0" izz="${(m/2.0)*(r*r)}" />
         </inertial>
 </xacro:macro>
+<material name="red">
+  <color rgba="0.8 0 0 1"/>
+</material>
 
     <link name="dummy_link">
     </link>
@@ -32,7 +35,8 @@
             <geometry>
                 <box size="${horizontal_ply_length} ${ply_breadth} ${ply_thickness}"/>
             </geometry>
-            <origin xyz="0.0 0.0 ${ply_thickness/2+wheel_radius}" />
+            <material name="red"/>
+            <origin xyz="0.0 0.0 ${ply_thickness/2}" />
         </visual>
         <collision>
             <geometry>
@@ -51,6 +55,7 @@
             <geometry>
                 <box size="${vertical_ply_length} ${ply_breadth} ${ply_thickness}"/>
             </geometry>
+            <material name="red"/>
             <origin xyz="0.0 0.0 ${vertical_ply_length/2}" rpy="0.0 1.57075 0.0"/>    
         </visual>
         <collision>
@@ -64,13 +69,14 @@
     <joint name="base_to_left_link" type="fixed">
         <parent link="base_link"/>
         <child link="left_link"/>
-        <origin xyz="${horizontal_ply_length/2} 0.0 0.04"/>
+        <origin xyz="${horizontal_ply_length/2} 0.0 0.0"/>
     </joint>
     <link name="right_link">
         <visual>
             <geometry>
                 <box size="${vertical_ply_length} ${ply_breadth} ${ply_thickness}"/>
             </geometry>
+            <material name="red"/>
             <origin xyz="0.0 0.0 ${vertical_ply_length/2}" rpy="0.0 1.57075 0.0"/>
         </visual>
         <collision>
@@ -83,13 +89,14 @@
     <joint name="base_to_right_link" type="fixed">
         <parent link="base_link"/>
         <child link="right_link"/>
-        <origin xyz="${-horizontal_ply_length/2} 0.0 0.04" />
+        <origin xyz="${-horizontal_ply_length/2} 0.0 0.0" />
     </joint>
     <link name="top_link">
         <visual>
             <geometry>
                 <box size="${horizontal_ply_length} ${ply_breadth} ${ply_thickness}"/>
             </geometry>
+            <material name="red"/>
             <origin xyz="0.0 0.0 ${-ply_thickness/2}" />
         </visual>
         <collision>
@@ -116,6 +123,7 @@
             <geometry>
                 <box size="${horizontal_ply_length} ${ply_breadth} ${ply_thickness}"/>
             </geometry>
+            <material name="red"/>
             <origin xyz="${-horizontal_ply_length/2} 0.0 0.01" />
         </visual>
         <collision>
@@ -142,6 +150,7 @@
             <geometry>
                 <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
             </geometry>
+            <material name="red"/>
             <origin rpy="0.0 1.57075 0.0"/>
         </visual>
         <collision>
@@ -156,13 +165,14 @@
         <axis xyz="1 0.0 0.0"/>
         <parent link="base_link"/>
         <child link="left_wheel"/>
-        <origin xyz="0.18 0.0 0.04" />
+        <origin xyz="0.18 0.0 0.0" />
     </joint>
     <link name="right_wheel">
         <visual>
             <geometry>
                 <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
             </geometry>
+            <material name="red"/>
             <origin rpy="0.0 1.57075 0.0"/>
         </visual>
         <collision>
@@ -176,7 +186,7 @@
     <joint name="base_to_right_wheel" type="continuous">
         <parent link="base_link"/>
         <child link="right_wheel"/>
-        <origin xyz="-0.18 0.0 0.04" />
+        <origin xyz="-0.18 0.0 0.0" />
     </joint>
     <link name="imu_link">
     </link>
@@ -186,5 +196,6 @@
         <origin xyz="0.01 0.0 0.0" />
         
     </joint>
-
+    <xacro:include filename="robot.gazebo.xacro"/>
+    
 </robot> 

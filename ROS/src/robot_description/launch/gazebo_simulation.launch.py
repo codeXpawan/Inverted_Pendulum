@@ -31,9 +31,15 @@ def generate_launch_description():
                     arguments=['-topic', 'robot_description',
                                 '-entity', 'Inverted_Pendulum'],
                     output='screen')
+    rviz2_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        arguments=['-d', rviz_config_path]
+    )
 
     return LaunchDescription([
         robot_state_publisher_node,
         gazebo,
-        spawn_entity
+        spawn_entity,
+        rviz2_node
     ])

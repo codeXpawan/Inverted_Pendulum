@@ -14,9 +14,9 @@ class CmdVelSubscriberNode:
             self.control_callback,
             10)
         self.velocity_pub = self.node.create_publisher(Twist,'/cmd_vel',10)
-        self.K_p = 32
+        self.K_p = 10
         self.K_i = 1
-        self.K_d = 0.0
+        self.K_d = 0.1
         self.previous_error = 0
         self.previous_sum_error = 0
         
@@ -32,11 +32,14 @@ class CmdVelSubscriberNode:
         
     def control_callback(self, msg:Imu):
         roll,pitch,yaw = self.quaternion_to_euler(msg.orientation.w,msg.orientation.x,msg.orientation.y,msg.orientation.z)
-        #one big issue is faced that is due to the 
+        #one big issue is faced that is due to the I_gain, the output is high due to this. Fixing this issue by making the previous_sum_error = 0 whenever the angle is 90.i.e parallel to ground
+        if self.previous_sum_error > 1 or self.previous_sum_error < -1:
+            self.previous_sum_error = 0
         #roll is the inclined angle of the robot
-        # linear_velocity = self.compute_pid(roll,0.0)
+        linear_velocity = self.compute_pid(roll,0.0)
+        print(linear_velocity)
         velocity = Twist()
-        velocity.linear.x = self.compute_pid(roll,0.0)
+        velocity.linear.x = linear_velocity
         self.velocity_pub.publish(velocity)
         
     def compute_pid(self,observed_value,setpoint):
